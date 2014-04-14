@@ -24,7 +24,7 @@ import com.opentable.scopes.threaddelegate.servlet.ThreadDelegatingScopeFilter;
 /**
  * Installs the ThreadDelegated Scope in an application.
  */
-public class ThreadDelegatedScopeModule extends ServletModule
+public final class ThreadDelegatedScopeModule extends ServletModule
 {
     @Override
     public void configureServlets()
@@ -35,5 +35,17 @@ public class ThreadDelegatedScopeModule extends ServletModule
 
         bind(ThreadDelegatingScopeFilter.class).in(Scopes.SINGLETON);
         filter("/*").through(ThreadDelegatingScopeFilter.class);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return getClass().hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        return obj != null && getClass().equals(obj.getClass());
     }
 }
