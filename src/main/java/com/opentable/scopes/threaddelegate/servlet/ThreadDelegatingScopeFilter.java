@@ -27,13 +27,15 @@ import javax.servlet.ServletResponse;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
-import com.opentable.logging.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.opentable.scopes.threaddelegate.ThreadDelegatedScope;
 
 @Singleton
 public class ThreadDelegatingScopeFilter implements Filter
 {
-    private static final Log LOG = Log.findLog();
+    private static final Logger LOG = LoggerFactory.getLogger(ThreadDelegatingScopeFilter.class);
 
     public static final String THREAD_DELEGATING_SCOPE_ACTIVE = ThreadDelegatingScopeFilter.class.getName() + ".active";
 
@@ -75,5 +77,6 @@ public class ThreadDelegatingScopeFilter implements Filter
     @Override
     public void destroy()
     {
+        LOG.info("ThreadDelegating scope destroyed");
     }
 }
