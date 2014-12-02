@@ -1,5 +1,5 @@
-Ness Computing Scopes Component
-===============================
+OpenTable Scopes Component
+==========================
 
 Component Charter
 -----------------
@@ -25,4 +25,4 @@ object.
 Activated by installing the ThreadDelegatedScopeModule. 
 
 ----
-Copyright (C) 2012 Ness Computing, Inc.
+Copyright (C) 2014 OpenTable, Inc.
