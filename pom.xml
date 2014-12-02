@@ -4,7 +4,7 @@
 
   <parent>
     <groupId>com.opentable</groupId>
-    <artifactId>otj-parent</artifactId>
+    <artifactId>otj-parent-oss</artifactId>
     <version>25</version>
   </parent>
 
