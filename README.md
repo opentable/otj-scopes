@@ -1,6 +1,8 @@
 OpenTable Scopes Component
 ==========================
 
+[![Build Status](https://travis-ci.org/opentable/otj-scopes.svg)](https://travis-ci.org/opentable/otj-scopes)
+
 Component Charter
 -----------------
 
