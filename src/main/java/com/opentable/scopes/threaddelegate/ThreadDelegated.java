@@ -25,7 +25,7 @@ import com.google.inject.ScopeAnnotation;
 /**
  * This is an extension of the "request" scope and somewhat close to the "thread" scope. It allows binding object to
  * an incoming request (controlled by the ThreadDelegatingScopeFilter), but objects in this scope can be "forwarded" to other threads
- * through an Executor or ExecutorService to allow execution "on behalf of the original request". 
+ * through an Executor or ExecutorService to allow execution "on behalf of the original request".
  *
  * Objects forwarded can e.g. be tracking information or authentication credentials.
  *

@@ -90,7 +90,7 @@ public class ThreadDelegatedContext
      * Objects put in the ThreadDelegated scope can implement this interface to be notified when
      * they are moved from one thread to another.
      */
-    public static interface ScopeListener
+    public interface ScopeListener
     {
         void event(ScopeEvent event);
     }
