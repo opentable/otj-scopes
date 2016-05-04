@@ -36,7 +36,7 @@ public class ThreadDelegatedScope implements Scope
 
     ThreadDelegatedScope()
     {
-        this.threadLocal = new ThreadLocal<ThreadDelegatedContext>();
+        this.threadLocal = new ThreadLocal<>();
     }
 
     /**
