@@ -118,17 +118,12 @@ public class TestThreadDelegated
         int threadCount = 10;
         final CountDownLatch latch = new CountDownLatch(threadCount);
         for (int i = 0 ; i < threadCount; i++) {
-            new Thread(new Runnable() {
-
-                @Override
-                public void run()
-                {
-                    final ScopedObject testObject = injector.getInstance(ScopedObject.class);
-                    Assert.assertEquals(0, testObject.getPerformances());
-                    testObject.perform();
-                    latch.countDown();
-                }
-
+            new Thread(() ->
+            {
+                final ScopedObject testObject2 = factory.getBean(ScopedObject.class);
+                Assert.assertEquals(0, testObject2.getPerformances());
+                testObject2.perform();
+                latch.countDown();
             }).start();
 
         }
@@ -156,20 +151,14 @@ public class TestThreadDelegated
 
         final CountDownLatch latch = new CountDownLatch(threadCount);
         for (int i = 0 ; i < threadCount; i++) {
-            new Thread(new Runnable() {
-
-                @Override
-                public void run()
-                {
-                    scope.changeScope(parentPlate);
-                    final ScopedObject testObject = injector.getInstance(ScopedObject.class);
-                    testObject.perform();
-                    scope.changeScope(null);
-                    latch.countDown();
-                }
-
+            new Thread(() ->
+            {
+                scope.changeScope(parentPlate);
+                final ScopedObject testObject2 = factory.getBean(ScopedObject.class);
+                testObject2.perform();
+                scope.changeScope(null);
+                latch.countDown();
             }).start();
-
         }
 
         Assert.assertTrue("Some threads got stuck!", latch.await(1, TimeUnit.SECONDS));

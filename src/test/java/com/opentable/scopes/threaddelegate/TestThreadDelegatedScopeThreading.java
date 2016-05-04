@@ -57,17 +57,12 @@ public class TestThreadDelegatedScopeThreading
         int threadCount = 10;
         final CountDownLatch latch = new CountDownLatch(threadCount);
         for (int i = 0 ; i < threadCount; i++) {
-            new Thread(new Runnable() {
-
-                @Override
-                public void run()
-                {
-                    final ScopedObject testObject = scopedProvider.get();
-                    Assert.assertEquals(0, testObject.getPerformances());
-                    testObject.perform();
-                    latch.countDown();
-                }
-
+            new Thread(() ->
+            {
+                final ScopedObject testObject = scopedProvider.get();
+                Assert.assertEquals(0, testObject.getPerformances());
+                testObject.perform();
+                latch.countDown();
             }).start();
         }
 
@@ -89,18 +84,13 @@ public class TestThreadDelegatedScopeThreading
 
         final CountDownLatch latch = new CountDownLatch(threadCount);
         for (int i = 0 ; i < threadCount; i++) {
-            new Thread(new Runnable() {
-
-                @Override
-                public void run()
-                {
-                    scope.changeScope(parentPlate);
-                    final ScopedObject testObject = scopedProvider.get();
-                    testObject.perform();
-                    scope.changeScope(null);
-                    latch.countDown();
-                }
-
+            new Thread(() ->
+            {
+                scope.changeScope(parentPlate);
+                final ScopedObject testObject = scopedProvider.get();
+                testObject.perform();
+                scope.changeScope(null);
+                latch.countDown();
             }).start();
         }
 

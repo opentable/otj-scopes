@@ -76,13 +76,11 @@ public class TestThreadDelegatingScopeFilter
         HttpServletRequest request = EasyMock.createNiceMock(HttpServletRequest.class);
         EasyMock.replay(request);
 
-        filter.doFilter(request, null, new FilterChain() {
-            @Override
-            public void doFilter(ServletRequest req, ServletResponse res) {
-                final ScopedObject t2 = injector.getInstance(ScopedObject.class);
-                Assert.assertNotNull(t2);
-                refHolder.set(t2);
-            }
+        filter.doFilter(request, null, (req, res) ->
+        {
+            final ScopedObject t2 = getBean(ScopedObject.class);
+            Assert.assertNotNull(t2);
+            refHolder.set(t2);
         });
 
         final ScopedObject t2 = refHolder.get();
