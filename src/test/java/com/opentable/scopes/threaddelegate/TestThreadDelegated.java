@@ -42,11 +42,6 @@ public class TestThreadDelegated
     @After
     public void tearDown()
     {
-        if (injector != null) {
-            // Get rid of the stupid "duplicate Servlet module warning"
-            final GuiceFilter filter = injector.getInstance(GuiceFilter.class);
-            filter.destroy();
-        }
         ThreadDelegatedScope.SCOPE.changeScope(null);
     }
 

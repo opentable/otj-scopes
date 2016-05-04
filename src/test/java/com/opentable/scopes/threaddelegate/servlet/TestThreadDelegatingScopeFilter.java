@@ -60,9 +60,6 @@ public class TestThreadDelegatingScopeFilter
         filter = null;
 
         Assert.assertNotNull(context);
-        // Get rid of the stupid "duplicate Servlet module warning"
-        final GuiceFilter filter = injector.getInstance(GuiceFilter.class);
-        filter.destroy();
         context = null;
 
         ThreadDelegatedScope.SCOPE.changeScope(null);
