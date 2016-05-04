@@ -102,7 +102,7 @@ public class ThreadDelegatedContext
         void event(ScopeEvent event);
     }
 
-    public static enum ScopeEvent
+    public enum ScopeEvent
     {
         ENTER,
         LEAVE;
