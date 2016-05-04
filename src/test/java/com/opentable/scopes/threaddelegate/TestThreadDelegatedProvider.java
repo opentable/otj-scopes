@@ -13,25 +13,20 @@
  */
 package com.opentable.scopes.threaddelegate;
 
+import javax.inject.Provider;
 
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.opentable.scopes.threaddelegate.ThreadDelegatedContext;
-import com.opentable.scopes.threaddelegate.ThreadDelegatedScope;
 import com.opentable.scopes.threaddelegate.ScopedObject.TestObjectProvider;
-
-import com.google.inject.Key;
-import com.google.inject.Provider;
-import com.google.inject.name.Names;
 
 public class TestThreadDelegatedProvider
 {
     private ThreadDelegatedScope scope = null;
 
-    private final Key<ScopedObject> fooTestObjectKey = Key.get(ScopedObject.class, Names.named("foo"));
+    private final String fooName = "foo";
 
     @Before
     public void setUp()
@@ -64,7 +59,7 @@ public class TestThreadDelegatedProvider
     @Test
     public void testSimpleProvider()
     {
-        final Provider<ScopedObject> scopedProvider = scope.scope(fooTestObjectKey, new TestObjectProvider());
+        final Provider<ScopedObject> scopedProvider = scope.provider(fooName, new TestObjectProvider());
         Assert.assertNotNull(scopedProvider);
 
         final ScopedObject t1 = scopedProvider.get();
@@ -79,7 +74,7 @@ public class TestThreadDelegatedProvider
     @Test
     public void testScopeChange()
     {
-        final Provider<ScopedObject> scopedProvider = scope.scope(fooTestObjectKey, new TestObjectProvider());
+        final Provider<ScopedObject> scopedProvider = scope.provider(fooName, new TestObjectProvider());
         Assert.assertNotNull(scopedProvider);
 
         final ScopedObject t1 = scopedProvider.get();
@@ -96,7 +91,7 @@ public class TestThreadDelegatedProvider
     @Test
     public void testScopeHandoff()
     {
-        final Provider<ScopedObject> scopedProvider = scope.scope(fooTestObjectKey, new TestObjectProvider());
+        final Provider<ScopedObject> scopedProvider = scope.provider(fooName, new TestObjectProvider());
         Assert.assertNotNull(scopedProvider);
 
         final ScopedObject t1 = scopedProvider.get();

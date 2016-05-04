@@ -16,24 +16,20 @@ package com.opentable.scopes.threaddelegate;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import javax.inject.Provider;
+
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.opentable.scopes.threaddelegate.ThreadDelegatedContext;
-import com.opentable.scopes.threaddelegate.ThreadDelegatedScope;
 import com.opentable.scopes.threaddelegate.ScopedObject.TestObjectProvider;
-
-import com.google.inject.Key;
-import com.google.inject.Provider;
-import com.google.inject.name.Names;
 
 public class TestThreadDelegatedScopeThreading
 {
     private ThreadDelegatedScope scope = null;
 
-    private final Key<ScopedObject> fooTestObjectKey = Key.get(ScopedObject.class, Names.named("foo"));
+    private final String fooName = "foo";
 
     @Before
     public void setUp()
@@ -56,7 +52,7 @@ public class TestThreadDelegatedScopeThreading
     public void testThreaded() throws Exception
     {
         final TestObjectProvider unscopedProvider = new TestObjectProvider();
-        final Provider<ScopedObject> scopedProvider = scope.scope(fooTestObjectKey, unscopedProvider);
+        final Provider<ScopedObject> scopedProvider = scope.provider(fooName, unscopedProvider);
 
         int threadCount = 10;
         final CountDownLatch latch = new CountDownLatch(threadCount);
@@ -73,7 +69,6 @@ public class TestThreadDelegatedScopeThreading
                 }
 
             }).start();
-
         }
 
         Assert.assertTrue("Some threads got stuck!", latch.await(1, TimeUnit.SECONDS));
@@ -86,7 +81,7 @@ public class TestThreadDelegatedScopeThreading
     public void testThreadHandover() throws Exception
     {
         final TestObjectProvider unscopedProvider = new TestObjectProvider();
-        final Provider<ScopedObject> scopedProvider = scope.scope(fooTestObjectKey, unscopedProvider);
+        final Provider<ScopedObject> scopedProvider = scope.provider(fooName, unscopedProvider);
 
         int threadCount = 10;
 
@@ -107,7 +102,6 @@ public class TestThreadDelegatedScopeThreading
                 }
 
             }).start();
-
         }
 
         Assert.assertTrue("Some threads got stuck!", latch.await(1, TimeUnit.SECONDS));

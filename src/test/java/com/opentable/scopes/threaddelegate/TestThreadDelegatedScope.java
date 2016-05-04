@@ -13,24 +13,18 @@
  */
 package com.opentable.scopes.threaddelegate;
 
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.opentable.scopes.threaddelegate.ThreadDelegatedContext;
-import com.opentable.scopes.threaddelegate.ThreadDelegatedScope;
 import com.opentable.scopes.threaddelegate.ThreadDelegatedContext.ScopeEvent;
-
-import com.google.inject.Key;
-import com.google.inject.name.Names;
 
 public class TestThreadDelegatedScope
 {
     private ThreadDelegatedScope scope = null;
 
-    private final Key<String> fooStringKey = Key.get(String.class, Names.named("foo"));
+    private final String fooName = "foo";
 
     @Before
     public void setUp()
@@ -107,7 +101,7 @@ public class TestThreadDelegatedScope
 
         final EventRecordingObject fooEventTest = new EventRecordingObject();
 
-        plate.put(fooStringKey, fooEventTest);
+        plate.put(fooName, fooEventTest);
         Assert.assertEquals(1, fooEventTest.getEventCount());
         Assert.assertEquals(ScopeEvent.ENTER, fooEventTest.getLastEvent());
 
@@ -123,7 +117,7 @@ public class TestThreadDelegatedScope
         final ThreadDelegatedContext plate = new ThreadDelegatedContext();
         final EventRecordingObject fooEventTest = new EventRecordingObject();
 
-        plate.put(fooStringKey, fooEventTest);
+        plate.put(fooName, fooEventTest);
         Assert.assertEquals(1, fooEventTest.getEventCount());
         Assert.assertEquals(ScopeEvent.ENTER, fooEventTest.getLastEvent());
 

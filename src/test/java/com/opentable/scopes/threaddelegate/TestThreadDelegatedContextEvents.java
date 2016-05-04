@@ -13,24 +13,19 @@
  */
 package com.opentable.scopes.threaddelegate;
 
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.opentable.scopes.threaddelegate.ThreadDelegatedContext;
 import com.opentable.scopes.threaddelegate.ThreadDelegatedContext.ScopeEvent;
-
-import com.google.inject.Key;
-import com.google.inject.name.Names;
 
 public class TestThreadDelegatedContextEvents
 {
     private ThreadDelegatedContext plate = null;
 
-    private final Key<String> fooStringKey = Key.get(String.class, Names.named("foo"));
-    private final Key<String> barStringKey = Key.get(String.class, Names.named("bar"));
+    private final String fooName = "foo";
+    private final String barName = "bar";
 
     @Before
     public void setUp()
@@ -49,10 +44,10 @@ public class TestThreadDelegatedContextEvents
     @Test
     public void testPutEvent()
     {
-        Assert.assertFalse(plate.containsKey(fooStringKey));
+        Assert.assertFalse(plate.containsKey(fooName));
         final EventRecordingObject eventTest = new EventRecordingObject();
 
-        plate.put(fooStringKey, eventTest);
+        plate.put(fooName, eventTest);
         Assert.assertEquals(1, eventTest.getEventCount());
         Assert.assertEquals(ScopeEvent.ENTER, eventTest.getLastEvent());
     }
@@ -60,17 +55,17 @@ public class TestThreadDelegatedContextEvents
     @Test
     public void testDoublePutEvent()
     {
-        Assert.assertFalse(plate.containsKey(fooStringKey));
+        Assert.assertFalse(plate.containsKey(fooName));
         final EventRecordingObject fooEventTest = new EventRecordingObject();
 
-        plate.put(fooStringKey, fooEventTest);
+        plate.put(fooName, fooEventTest);
         Assert.assertEquals(1, fooEventTest.getEventCount());
         Assert.assertEquals(ScopeEvent.ENTER, fooEventTest.getLastEvent());
 
-        Assert.assertFalse(plate.containsKey(barStringKey));
+        Assert.assertFalse(plate.containsKey(barName));
         final EventRecordingObject barEventTest = new EventRecordingObject();
 
-        plate.put(barStringKey, barEventTest);
+        plate.put(barName, barEventTest);
         Assert.assertEquals(1, barEventTest.getEventCount());
         Assert.assertEquals(ScopeEvent.ENTER, barEventTest.getLastEvent());
 
@@ -81,10 +76,10 @@ public class TestThreadDelegatedContextEvents
     @Test
     public void testEventNotify()
     {
-        Assert.assertFalse(plate.containsKey(fooStringKey));
+        Assert.assertFalse(plate.containsKey(fooName));
         final EventRecordingObject fooEventTest = new EventRecordingObject();
 
-        plate.put(fooStringKey, fooEventTest);
+        plate.put(fooName, fooEventTest);
         Assert.assertEquals(1, fooEventTest.getEventCount());
         Assert.assertEquals(ScopeEvent.ENTER, fooEventTest.getLastEvent());
 
@@ -101,10 +96,10 @@ public class TestThreadDelegatedContextEvents
     @Test
     public void testEventClear()
     {
-        Assert.assertFalse(plate.containsKey(fooStringKey));
+        Assert.assertFalse(plate.containsKey(fooName));
         final EventRecordingObject fooEventTest = new EventRecordingObject();
 
-        plate.put(fooStringKey, fooEventTest);
+        plate.put(fooName, fooEventTest);
         Assert.assertEquals(1, fooEventTest.getEventCount());
         Assert.assertEquals(ScopeEvent.ENTER, fooEventTest.getLastEvent());
 

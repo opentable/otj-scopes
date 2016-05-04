@@ -21,24 +21,15 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-
-import com.opentable.scopes.threaddelegate.ThreadDelegated;
-import com.opentable.scopes.threaddelegate.ThreadDelegatedContext;
-import com.opentable.scopes.threaddelegate.ThreadDelegatedScope;
-import com.opentable.scopes.threaddelegate.ThreadDelegatedScopeModule;
-
-import com.google.inject.Binder;
-import com.google.inject.Guice;
-import com.google.inject.Injector;
-import com.google.inject.Module;
-import com.google.inject.Provides;
-import com.google.inject.Stage;
-import com.google.inject.servlet.GuiceFilter;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
 
 public class TestThreadDelegated
 {
-    private Injector injector = null;
-
     private static final AtomicInteger HANDED_OUT = new AtomicInteger();
 
     @Before
@@ -62,16 +53,13 @@ public class TestThreadDelegated
     @Test
     public void testScopedObject()
     {
-        injector = Guice.createInjector(Stage.PRODUCTION,
-                                        new ThreadDelegatedScopeModule(),
-                                        new ScopedModule());
+        final BeanFactory factory = getFactory();
 
-
-        final ThreadDelegatedScope scope = injector.getInstance(ThreadDelegatedScope.class);
+        final ThreadDelegatedScope scope = factory.getBean(ThreadDelegatedScope.class);
         Assert.assertNotNull(scope);
 
-        final ScopedObject t1 = injector.getInstance(ScopedObject.class);
-        final ScopedObject t2 = injector.getInstance(ScopedObject.class);
+        final ScopedObject t1 = factory.getBean(ScopedObject.class);
+        final ScopedObject t2 = factory.getBean(ScopedObject.class);
         Assert.assertNotNull(t1);
         Assert.assertNotNull(t2);
         Assert.assertSame(t1, t2);
@@ -80,19 +68,17 @@ public class TestThreadDelegated
     @Test
     public void testScopeChange()
     {
-        injector = Guice.createInjector(Stage.PRODUCTION,
-                                        new ThreadDelegatedScopeModule(),
-                                        new ScopedModule());
+        final BeanFactory factory = getFactory();
 
-        final ThreadDelegatedScope scope = injector.getInstance(ThreadDelegatedScope.class);
+        final ThreadDelegatedScope scope = factory.getBean(ThreadDelegatedScope.class);
         Assert.assertNotNull(scope);
 
-        final ScopedObject t1 = injector.getInstance(ScopedObject.class);
+        final ScopedObject t1 = factory.getBean(ScopedObject.class);
         Assert.assertNotNull(t1);
 
         scope.changeScope(null);
 
-        final ScopedObject t2 = injector.getInstance(ScopedObject.class);
+        final ScopedObject t2 = factory.getBean(ScopedObject.class);
         Assert.assertNotNull(t2);
 
         Assert.assertNotSame(t1, t2);
@@ -101,28 +87,26 @@ public class TestThreadDelegated
     @Test
     public void testScopeHandoff()
     {
-        injector = Guice.createInjector(Stage.PRODUCTION,
-                                        new ThreadDelegatedScopeModule(),
-                                        new ScopedModule());
+        final BeanFactory factory = getFactory();
 
-        final ThreadDelegatedScope scope = injector.getInstance(ThreadDelegatedScope.class);
+        final ThreadDelegatedScope scope = factory.getBean(ThreadDelegatedScope.class);
         Assert.assertNotNull(scope);
 
-        final ScopedObject t1 = injector.getInstance(ScopedObject.class);
+        final ScopedObject t1 = factory.getBean(ScopedObject.class);
         Assert.assertNotNull(t1);
 
         final ThreadDelegatedContext plate = scope.getContext();
 
         scope.changeScope(null);
 
-        final ScopedObject t2 = injector.getInstance(ScopedObject.class);
+        final ScopedObject t2 = factory.getBean(ScopedObject.class);
         Assert.assertNotNull(t2);
 
         Assert.assertNotSame(t1, t2);
 
         scope.changeScope(plate);
 
-        final ScopedObject t3 = injector.getInstance(ScopedObject.class);
+        final ScopedObject t3 = factory.getBean(ScopedObject.class);
         Assert.assertNotNull(t3);
 
         Assert.assertSame(t1, t3);
@@ -132,11 +116,9 @@ public class TestThreadDelegated
     @Test
     public void testThreaded() throws Exception
     {
-        injector = Guice.createInjector(Stage.PRODUCTION,
-                                        new ThreadDelegatedScopeModule(),
-                                        new ScopedModule());
+        final BeanFactory factory = getFactory();
 
-        final ScopedObject testObject = injector.getInstance(ScopedObject.class);
+        final ScopedObject testObject = factory.getBean(ScopedObject.class);
 
         int threadCount = 10;
         final CountDownLatch latch = new CountDownLatch(threadCount);
@@ -165,14 +147,12 @@ public class TestThreadDelegated
     @Test
     public void testThreadHandover() throws Exception
     {
-        injector = Guice.createInjector(Stage.PRODUCTION,
-                                        new ThreadDelegatedScopeModule(),
-                                        new ScopedModule());
+        final BeanFactory factory = getFactory();
 
-        final ScopedObject testObject = injector.getInstance(ScopedObject.class);
+        final ScopedObject testObject = factory.getBean(ScopedObject.class);
         Assert.assertEquals(1, HANDED_OUT.get());
 
-        final ThreadDelegatedScope scope = injector.getInstance(ThreadDelegatedScope.class);
+        final ThreadDelegatedScope scope = factory.getBean(ThreadDelegatedScope.class);
         Assert.assertNotNull(scope);
 
         int threadCount = 10;
@@ -203,19 +183,21 @@ public class TestThreadDelegated
         Assert.assertEquals(threadCount, testObject.getPerformances());
     }
 
-    public static class ScopedModule implements Module
+    @Configuration
+    public static class ScopedConfig
     {
-        @Override
-        public void configure(final Binder binder)
-        {
-        }
-
-        @Provides
-        @ThreadDelegated
+        @Bean
+        @Scope(ThreadDelegatedContext.SCOPE_THREAD_DELEGATED)
         public ScopedObject getTestObject()
         {
             HANDED_OUT.incrementAndGet();
             return new ScopedObject();
         }
+    }
+
+    private static BeanFactory getFactory() {
+        final ApplicationContext context =
+                new AnnotationConfigApplicationContext(ThreadDelegatedScopeConfig.class, ScopedConfig.class);
+        return context.getAutowireCapableBeanFactory();
     }
 }

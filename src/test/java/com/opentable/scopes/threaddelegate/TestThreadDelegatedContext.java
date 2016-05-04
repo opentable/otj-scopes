@@ -18,17 +18,13 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.opentable.scopes.threaddelegate.ThreadDelegatedContext;
-
-import com.google.inject.Key;
-import com.google.inject.name.Names;
-
 public class TestThreadDelegatedContext
 {
     private ThreadDelegatedContext plate = null;
 
-    private final Key<String> fooStringKey = Key.get(String.class, Names.named("foo"));
-    private final Key<String> barStringKey = Key.get(String.class, Names.named("bar"));
+    private final String fooName = "foo";
+    private final String barName = "bar";
+    private final String bazName = "baz";
 
     @Before
     public void setUp()
@@ -48,103 +44,103 @@ public class TestThreadDelegatedContext
     public void testEmptyPlate()
     {
         Assert.assertEquals(0, plate.size());
-        Assert.assertFalse(plate.containsKey(Key.get(String.class)));
+        Assert.assertFalse(plate.containsKey(bazName));
     }
 
     @Test
     public void testSimplePut()
     {
-        Assert.assertFalse(plate.containsKey(fooStringKey));
+        Assert.assertFalse(plate.containsKey(fooName));
 
-        plate.put(fooStringKey, "hallo");
+        plate.put(fooName, "hallo");
         Assert.assertEquals(1, plate.size());
-        Assert.assertTrue(plate.containsKey(fooStringKey));
-        Assert.assertEquals("hallo", plate.get(fooStringKey));
+        Assert.assertTrue(plate.containsKey(fooName));
+        Assert.assertEquals("hallo", plate.get(fooName));
     }
 
     @Test
     public void testDoubleSamePut()
     {
-        Assert.assertFalse(plate.containsKey(fooStringKey));
+        Assert.assertFalse(plate.containsKey(fooName));
 
-        plate.put(fooStringKey, "hallo");
+        plate.put(fooName, "hallo");
         Assert.assertEquals(1, plate.size());
-        Assert.assertTrue(plate.containsKey(fooStringKey));
-        Assert.assertEquals("hallo", plate.get(fooStringKey));
+        Assert.assertTrue(plate.containsKey(fooName));
+        Assert.assertEquals("hallo", plate.get(fooName));
 
-        plate.put(fooStringKey, "hallo");
+        plate.put(fooName, "hallo");
         Assert.assertEquals(1, plate.size());
-        Assert.assertTrue(plate.containsKey(fooStringKey));
-        Assert.assertEquals("hallo", plate.get(fooStringKey));
+        Assert.assertTrue(plate.containsKey(fooName));
+        Assert.assertEquals("hallo", plate.get(fooName));
     }
 
     @Test
     public void testOverridePut()
     {
-        plate.put(fooStringKey, "hallo");
+        plate.put(fooName, "hallo");
         Assert.assertEquals(1, plate.size());
-        Assert.assertTrue(plate.containsKey(fooStringKey));
-        Assert.assertEquals("hallo", plate.get(fooStringKey));
+        Assert.assertTrue(plate.containsKey(fooName));
+        Assert.assertEquals("hallo", plate.get(fooName));
 
         // Override put
-        plate.put(fooStringKey, "world");
+        plate.put(fooName, "world");
         Assert.assertEquals(1, plate.size());
-        Assert.assertTrue(plate.containsKey(fooStringKey));
-        Assert.assertEquals("world", plate.get(fooStringKey));
+        Assert.assertTrue(plate.containsKey(fooName));
+        Assert.assertEquals("world", plate.get(fooName));
     }
 
     @Test
     public void testDoublePut()
     {
-        Assert.assertFalse(plate.containsKey(fooStringKey));
-        Assert.assertFalse(plate.containsKey(barStringKey));
+        Assert.assertFalse(plate.containsKey(fooName));
+        Assert.assertFalse(plate.containsKey(barName));
 
-        plate.put(fooStringKey, "hallo");
+        plate.put(fooName, "hallo");
         Assert.assertEquals(1, plate.size());
-        Assert.assertTrue(plate.containsKey(fooStringKey));
-        Assert.assertEquals("hallo", plate.get(fooStringKey));
+        Assert.assertTrue(plate.containsKey(fooName));
+        Assert.assertEquals("hallo", plate.get(fooName));
 
-        plate.put(barStringKey, "world");
+        plate.put(barName, "world");
         Assert.assertEquals(2, plate.size());
-        Assert.assertTrue(plate.containsKey(barStringKey));
-        Assert.assertEquals("world", plate.get(barStringKey));
+        Assert.assertTrue(plate.containsKey(barName));
+        Assert.assertEquals("world", plate.get(barName));
     }
 
     @Test
     public void testNullValue()
     {
-        plate.put(fooStringKey, null);
+        plate.put(fooName, null);
         Assert.assertEquals(1, plate.size());
-        Assert.assertTrue(plate.containsKey(fooStringKey));
-        Assert.assertNull(plate.get(fooStringKey));
+        Assert.assertTrue(plate.containsKey(fooName));
+        Assert.assertNull(plate.get(fooName));
 
         // Override put
-        plate.put(fooStringKey, "world");
+        plate.put(fooName, "world");
         Assert.assertEquals(1, plate.size());
-        Assert.assertTrue(plate.containsKey(fooStringKey));
-        Assert.assertEquals("world", plate.get(fooStringKey));
+        Assert.assertTrue(plate.containsKey(fooName));
+        Assert.assertEquals("world", plate.get(fooName));
     }
 
     @Test
     public void testClear()
     {
-        Assert.assertFalse(plate.containsKey(fooStringKey));
-        Assert.assertFalse(plate.containsKey(barStringKey));
+        Assert.assertFalse(plate.containsKey(fooName));
+        Assert.assertFalse(plate.containsKey(barName));
 
-        plate.put(fooStringKey, "hallo");
+        plate.put(fooName, "hallo");
         Assert.assertEquals(1, plate.size());
-        Assert.assertTrue(plate.containsKey(fooStringKey));
-        Assert.assertEquals("hallo", plate.get(fooStringKey));
+        Assert.assertTrue(plate.containsKey(fooName));
+        Assert.assertEquals("hallo", plate.get(fooName));
 
-        plate.put(barStringKey, "world");
+        plate.put(barName, "world");
         Assert.assertEquals(2, plate.size());
-        Assert.assertTrue(plate.containsKey(barStringKey));
-        Assert.assertEquals("world", plate.get(barStringKey));
+        Assert.assertTrue(plate.containsKey(barName));
+        Assert.assertEquals("world", plate.get(barName));
 
         plate.clear();
 
-        Assert.assertFalse(plate.containsKey(fooStringKey));
-        Assert.assertFalse(plate.containsKey(barStringKey));
+        Assert.assertFalse(plate.containsKey(fooName));
+        Assert.assertFalse(plate.containsKey(barName));
     }
 
     @Test(expected=IllegalArgumentException.class)

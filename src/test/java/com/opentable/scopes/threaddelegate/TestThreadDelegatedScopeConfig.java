@@ -20,22 +20,14 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-import com.opentable.scopes.threaddelegate.ThreadDelegatedContext;
-import com.opentable.scopes.threaddelegate.ThreadDelegatedScope;
-import com.opentable.scopes.threaddelegate.ThreadDelegatedScopeModule;
 import com.opentable.scopes.threaddelegate.ScopedObject.TestObjectProvider;
 
-import com.google.inject.AbstractModule;
-import com.google.inject.Guice;
-import com.google.inject.Injector;
-import com.google.inject.Stage;
-import com.google.inject.servlet.GuiceFilter;
-
-public class TestThreadDelegatedScopeModule
+public class TestThreadDelegatedScopeConfig
 {
-    private Injector injector = null;
-
     @Before
     public void setUp()
     {
@@ -57,8 +49,8 @@ public class TestThreadDelegatedScopeModule
     @Test
     public void testSimple()
     {
-        injector = Guice.createInjector(Stage.PRODUCTION, new ThreadDelegatedScopeModule());
-        final ThreadDelegatedScope scope = injector.getInstance(ThreadDelegatedScope.class);
+        final BeanFactory factory = getSimpleBeanFactory();
+        final ThreadDelegatedScope scope = factory.getBean(ThreadDelegatedScope.class);
         Assert.assertNotNull(scope);
 
         // This is important because the executor decorators rely on the object
@@ -69,20 +61,13 @@ public class TestThreadDelegatedScopeModule
     @Test
     public void testScopedObject()
     {
-        injector = Guice.createInjector(Stage.PRODUCTION,
-                                        new ThreadDelegatedScopeModule(),
-                                        new AbstractModule() {
-            @Override
-            public void configure() {
-                bind(ScopedObject.class).toProvider(TestObjectProvider.class).in(ThreadDelegatedScope.SCOPE);
-            }
-        });
+        final BeanFactory factory = getScopedObjectBeanFactory();
 
-        final ThreadDelegatedScope scope = injector.getInstance(ThreadDelegatedScope.class);
+        final ThreadDelegatedScope scope = factory.getBean(ThreadDelegatedScope.class);
         Assert.assertNotNull(scope);
 
-        final ScopedObject t1 = injector.getInstance(ScopedObject.class);
-        final ScopedObject t2 = injector.getInstance(ScopedObject.class);
+        final ScopedObject t1 = factory.getBean(ScopedObject.class);
+        final ScopedObject t2 = factory.getBean(ScopedObject.class);
         Assert.assertNotNull(t1);
         Assert.assertNotNull(t2);
         Assert.assertSame(t1, t2);
@@ -91,24 +76,17 @@ public class TestThreadDelegatedScopeModule
     @Test
     public void testScopeChange()
     {
-        injector = Guice.createInjector(Stage.PRODUCTION,
-                                        new ThreadDelegatedScopeModule(),
-                                        new AbstractModule() {
-            @Override
-            public void configure() {
-                bind(ScopedObject.class).toProvider(TestObjectProvider.class).in(ThreadDelegatedScope.SCOPE);
-            }
-        });
+        final BeanFactory factory = getScopedObjectBeanFactory();
 
-        final ThreadDelegatedScope scope = injector.getInstance(ThreadDelegatedScope.class);
+        final ThreadDelegatedScope scope = factory.getBean(ThreadDelegatedScope.class);
         Assert.assertNotNull(scope);
 
-        final ScopedObject t1 = injector.getInstance(ScopedObject.class);
+        final ScopedObject t1 = factory.getBean(ScopedObject.class);
         Assert.assertNotNull(t1);
 
         scope.changeScope(null);
 
-        final ScopedObject t2 = injector.getInstance(ScopedObject.class);
+        final ScopedObject t2 = factory.getBean(ScopedObject.class);
         Assert.assertNotNull(t2);
 
         Assert.assertNotSame(t1, t2);
@@ -117,33 +95,26 @@ public class TestThreadDelegatedScopeModule
     @Test
     public void testScopeHandoff()
     {
-        injector = Guice.createInjector(Stage.PRODUCTION,
-                                        new ThreadDelegatedScopeModule(),
-                                        new AbstractModule() {
-            @Override
-            public void configure() {
-                bind(ScopedObject.class).toProvider(TestObjectProvider.class).in(ThreadDelegatedScope.SCOPE);
-            }
-        });
+        final BeanFactory factory = getScopedObjectBeanFactory();
 
-        final ThreadDelegatedScope scope = injector.getInstance(ThreadDelegatedScope.class);
+        final ThreadDelegatedScope scope = factory.getBean(ThreadDelegatedScope.class);
         Assert.assertNotNull(scope);
 
-        final ScopedObject t1 = injector.getInstance(ScopedObject.class);
+        final ScopedObject t1 = factory.getBean(ScopedObject.class);
         Assert.assertNotNull(t1);
 
         final ThreadDelegatedContext plate = scope.getContext();
 
         scope.changeScope(null);
 
-        final ScopedObject t2 = injector.getInstance(ScopedObject.class);
+        final ScopedObject t2 = factory.getBean(ScopedObject.class);
         Assert.assertNotNull(t2);
 
         Assert.assertNotSame(t1, t2);
 
         scope.changeScope(plate);
 
-        final ScopedObject t3 = injector.getInstance(ScopedObject.class);
+        final ScopedObject t3 = factory.getBean(ScopedObject.class);
         Assert.assertNotNull(t3);
 
         Assert.assertSame(t1, t3);
@@ -153,16 +124,9 @@ public class TestThreadDelegatedScopeModule
     @Test
     public void testThreaded() throws Exception
     {
-        injector = Guice.createInjector(Stage.PRODUCTION,
-                                        new ThreadDelegatedScopeModule(),
-                                        new AbstractModule() {
-            @Override
-            public void configure() {
-                bind(ScopedObject.class).toProvider(TestObjectProvider.class).in(ThreadDelegatedScope.SCOPE);
-            }
-        });
+        final BeanFactory factory = getScopedObjectBeanFactory();
 
-        final ScopedObject testObject = injector.getInstance(ScopedObject.class);
+        final ScopedObject testObject = factory.getBean(ScopedObject.class);
 
         int threadCount = 10;
         final CountDownLatch latch = new CountDownLatch(threadCount);
@@ -179,7 +143,6 @@ public class TestThreadDelegatedScopeModule
                 }
 
             }).start();
-
         }
 
         Assert.assertTrue("Some threads got stuck!", latch.await(1, TimeUnit.SECONDS));
@@ -191,19 +154,12 @@ public class TestThreadDelegatedScopeModule
     @Test
     public void testThreadHandover() throws Exception
     {
-        injector = Guice.createInjector(Stage.PRODUCTION,
-                                        new ThreadDelegatedScopeModule(),
-                                        new AbstractModule() {
-            @Override
-            public void configure() {
-                bind(ScopedObject.class).toProvider(TestObjectProvider.class).in(ThreadDelegatedScope.SCOPE);
-            }
-        });
+        final BeanFactory factory = getScopedObjectBeanFactory();
 
-        final ScopedObject testObject = injector.getInstance(ScopedObject.class);
+        final ScopedObject testObject = factory.getBean(ScopedObject.class);
         Assert.assertEquals(1, TestObjectProvider.getHandouts());
 
-        final ThreadDelegatedScope scope = injector.getInstance(ThreadDelegatedScope.class);
+        final ThreadDelegatedScope scope = factory.getBean(ThreadDelegatedScope.class);
         Assert.assertNotNull(scope);
 
         int threadCount = 10;
@@ -233,4 +189,15 @@ public class TestThreadDelegatedScopeModule
         Assert.assertEquals(1, TestObjectProvider.getHandouts());
         Assert.assertEquals(threadCount, testObject.getPerformances());
     }
+
+    private static BeanFactory getSimpleBeanFactory() {
+        return new AnnotationConfigApplicationContext(ThreadDelegatedScopeConfig.class).getAutowireCapableBeanFactory();
+    }
+
+    private static BeanFactory getScopedObjectBeanFactory() {
+        final ApplicationContext context =
+                new AnnotationConfigApplicationContext(ThreadDelegatedScopeConfig.class, ScopedObject.Config.class);
+        return context.getAutowireCapableBeanFactory();
+    }
+
 }
