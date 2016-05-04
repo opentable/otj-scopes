@@ -64,6 +64,14 @@ public class ThreadDelegatedContext
         }
     }
 
+    @SuppressWarnings("unchecked")
+    synchronized <T> T remove(@Nonnull final String name)
+    {
+        Preconditions.checkArgument(name != null, "name must not be null!");
+        final Object result = contents.remove(name);
+        return (T) result;
+    }
+
     @VisibleForTesting
     synchronized void clear()
     {
