@@ -23,7 +23,6 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.google.inject.Key;
 
 /**
  * This is the context object for the scope. All members of the context object can potentially
@@ -31,31 +30,31 @@ import com.google.inject.Key;
  */
 public class ThreadDelegatedContext
 {
-    private final Map<Key<?>, Object> contents = Maps.newHashMap();
+    private final Map<String, Object> contents = Maps.newHashMap();
     private final Set<ScopeListener> listeners = Sets.newHashSet();
 
     ThreadDelegatedContext()
     {
     }
 
-    synchronized boolean containsKey(@Nonnull final Key<?> key)
+    synchronized boolean containsKey(@Nonnull final String name)
     {
-        Preconditions.checkArgument(key != null, "Key must not be null!");
-        return contents.containsKey(key);
+        Preconditions.checkArgument(name != null, "name must not be null!");
+        return contents.containsKey(name);
     }
 
     @SuppressWarnings("unchecked")
-    synchronized <T> T get(final Key<T> key)
+    synchronized <T> T get(final String name)
     {
-        Preconditions.checkArgument(key != null, "Key must not be null!");
-        final Object result = contents.get(key);
+        Preconditions.checkArgument(name != null, "name must not be null!");
+        final Object result = contents.get(name);
         return (T) result;
     }
 
-    synchronized void put(@Nonnull final Key<?> key, @Nullable final Object value)
+    synchronized void put(@Nonnull final String name, @Nullable final Object value)
     {
-        Preconditions.checkArgument(key != null, "Key must not be null!");
-        contents.put(key, value);
+        Preconditions.checkArgument(name != null, "name must not be null!");
+        contents.put(name, value);
 
         if (value instanceof ScopeListener) {
             final ScopeListener listener = ScopeListener.class.cast(value);
