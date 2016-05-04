@@ -30,6 +30,8 @@ import com.google.common.base.Preconditions;
  */
 public class ThreadDelegatedContext
 {
+    public static final String SCOPE_THREAD_DELEGATED = "thread_delegated";
+
     private final Map<String, Object> contents = new HashMap<>();
     private final Set<ScopeListener> listeners = new HashSet<>();
 

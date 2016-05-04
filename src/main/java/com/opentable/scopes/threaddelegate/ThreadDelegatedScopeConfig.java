@@ -13,37 +13,28 @@
  */
 package com.opentable.scopes.threaddelegate;
 
-
-import com.google.inject.Scopes;
-import com.google.inject.servlet.ServletModule;
+import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 
 import com.opentable.scopes.threaddelegate.servlet.ThreadDelegatingScopeFilter;
 
 /**
  * Installs the ThreadDelegated Scope in an application.
  */
-public final class ThreadDelegatedScopeModule extends ServletModule
+@Configuration
+@Import(ThreadDelegatingScopeFilter.class)
+public class ThreadDelegatedScopeConfig
 {
-    @Override
-    public void configureServlets()
-    {
-        bind(ThreadDelegatedScope.class).toInstance(ThreadDelegatedScope.SCOPE);
-
-        bindScope(ThreadDelegated.class, ThreadDelegatedScope.SCOPE);
-
-        bind(ThreadDelegatingScopeFilter.class).in(Scopes.SINGLETON);
-        filter("/*").through(ThreadDelegatingScopeFilter.class);
+    @Bean
+    public static BeanFactoryPostProcessor getBeanFactoryPostProcessor() {
+        return beanFactory ->
+                beanFactory.registerScope(ThreadDelegatedContext.SCOPE_THREAD_DELEGATED, ThreadDelegatedScope.SCOPE);
     }
 
-    @Override
-    public int hashCode()
-    {
-        return getClass().hashCode();
-    }
-
-    @Override
-    public boolean equals(Object obj)
-    {
-        return obj != null && getClass().equals(obj.getClass());
+    @Bean
+    public ThreadDelegatedScope getThreadDelegatedScope() {
+        return ThreadDelegatedScope.SCOPE;
     }
 }
