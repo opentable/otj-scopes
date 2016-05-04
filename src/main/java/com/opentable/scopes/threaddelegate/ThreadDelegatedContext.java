@@ -13,6 +13,8 @@
  */
 package com.opentable.scopes.threaddelegate;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -21,8 +23,6 @@ import javax.annotation.Nullable;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 
 /**
  * This is the context object for the scope. All members of the context object can potentially
@@ -30,8 +30,8 @@ import com.google.common.collect.Sets;
  */
 public class ThreadDelegatedContext
 {
-    private final Map<String, Object> contents = Maps.newHashMap();
-    private final Set<ScopeListener> listeners = Sets.newHashSet();
+    private final Map<String, Object> contents = new HashMap<>();
+    private final Set<ScopeListener> listeners = new HashSet<>();
 
     ThreadDelegatedContext()
     {
