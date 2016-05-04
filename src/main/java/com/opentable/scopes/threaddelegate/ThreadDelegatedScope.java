@@ -13,21 +13,20 @@
  */
 package com.opentable.scopes.threaddelegate;
 
-
 import javax.annotation.Nullable;
+import javax.inject.Provider;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
-import com.google.inject.Key;
-import com.google.inject.Provider;
-import com.google.inject.Scope;
-import com.google.inject.Singleton;
+
+import org.springframework.beans.factory.ObjectFactory;
+import org.springframework.beans.factory.config.Scope;
 
 import com.opentable.scopes.threaddelegate.ThreadDelegatedContext.ScopeEvent;
 
 /**
  * Maintains the global state for the ThreadDelegatedScope.
  */
-@Singleton
 public class ThreadDelegatedScope implements Scope
 {
     private final ThreadLocal<ThreadDelegatedContext> threadLocal;
@@ -83,22 +82,52 @@ public class ThreadDelegatedScope implements Scope
     }
 
     @Override
-    public <T> Provider<T> scope(final Key<T> key, final Provider<T> unscoped)
+    public Object get(String name, ObjectFactory<?> objectFactory)
     {
-        return new ThreadDelegatedScopeProvider<T>(key, unscoped);
+        return provider(name, objectFactory::getObject).get();
+    }
+
+    @Override
+    public String getConversationId()
+    {
+        return Thread.currentThread().getName();
+    }
+
+    @Override
+    public void registerDestructionCallback(String name, Runnable callback)
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Object remove(String name)
+    {
+        return getContext().remove(name);
+    }
+
+    @Override
+    public Object resolveContextualObject(String key)
+    {
+        return null;
+    }
+
+    @VisibleForTesting
+    <T> ThreadDelegatedScopeProvider<T> provider(final String name, final Provider<T> unscoped)
+    {
+        return new ThreadDelegatedScopeProvider<>(name, unscoped);
     }
 
     public class ThreadDelegatedScopeProvider<T> implements Provider<T>
     {
-        private final Key<T> key;
+        private final String name;
         private final Provider<T> unscoped;
 
-        public ThreadDelegatedScopeProvider(final Key<T> key, final Provider<T> unscoped)
+        public ThreadDelegatedScopeProvider(final String name, final Provider<T> unscoped)
         {
-            Preconditions.checkArgument(key != null, "key must not be null!");
+            Preconditions.checkArgument(name != null, "key must not be null!");
             Preconditions.checkArgument(unscoped != null, "unscoped provider must not be null!");
 
-            this.key = key;
+            this.name = name;
             this.unscoped = unscoped;
         }
 
@@ -109,12 +138,12 @@ public class ThreadDelegatedScope implements Scope
             // This must be synchronized around the context, because otherwise
             // multiple threads will try to set the same value at the same time.
             synchronized(context) {
-                if (context.containsKey(key)) {
-                    return context.get(key);
+                if (context.containsKey(name)) {
+                    return context.get(name);
                 }
                 else {
                     final T value = unscoped.get();
-                    context.put(key, value);
+                    context.put(name, value);
                     return value;
                 }
             }
@@ -126,7 +155,7 @@ public class ThreadDelegatedScope implements Scope
         public synchronized String toString()
         {
             if (toString == null) {
-                toString = String.format("ThreadDelegatedScoped provider (Key: %s) of %s", key.toString(), unscoped.toString());
+                toString = String.format("ThreadDelegatedScoped provider (name: %s) of %s", name, unscoped.toString());
             }
             return toString;
         }
