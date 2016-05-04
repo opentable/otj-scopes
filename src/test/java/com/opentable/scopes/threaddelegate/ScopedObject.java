@@ -15,7 +15,11 @@ package com.opentable.scopes.threaddelegate;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.google.inject.Provider;
+import javax.inject.Provider;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
 
 public class ScopedObject
 {
@@ -54,6 +58,15 @@ public class ScopedObject
         public static void reset()
         {
             HANDOUTS.set(0);
+        }
+    }
+
+    @Configuration
+    public static class Config {
+        @Bean
+        @Scope(ThreadDelegatedContext.SCOPE_THREAD_DELEGATED)
+        public ScopedObject getScopedObject() {
+            return new TestObjectProvider().get();
         }
     }
 }
