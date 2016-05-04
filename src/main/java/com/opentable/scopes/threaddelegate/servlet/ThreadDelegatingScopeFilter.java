@@ -50,6 +50,7 @@ public class ThreadDelegatingScopeFilter implements Filter
         try {
             // chase out all objects that might be here, because the thread managed earlier to escape without
             // going though the LEAVE below. This is very unlikely to happen, though.
+            // TODO Maybe implement compare-and-set and LOG.warn if not null already?
             scope.changeScope(null);
 
             // Mark to the filters further down that the scope is now active.
