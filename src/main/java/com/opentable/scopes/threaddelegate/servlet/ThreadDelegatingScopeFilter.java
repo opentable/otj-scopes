@@ -15,6 +15,8 @@ package com.opentable.scopes.threaddelegate.servlet;
 
 import java.io.IOException;
 
+import javax.inject.Inject;
+import javax.inject.Named;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -22,15 +24,12 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.opentable.scopes.threaddelegate.ThreadDelegatedScope;
 
-@Singleton
+@Named
 public class ThreadDelegatingScopeFilter implements Filter
 {
     private static final Logger LOG = LoggerFactory.getLogger(ThreadDelegatingScopeFilter.class);
