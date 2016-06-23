@@ -29,7 +29,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 
 import com.opentable.scopes.threaddelegate.ScopedObject;
 import com.opentable.scopes.threaddelegate.ThreadDelegatedScope;
-import com.opentable.scopes.threaddelegate.ThreadDelegatedScopeConfig;
+import com.opentable.scopes.threaddelegate.ThreadDelegatedScopeConfiguration;
 
 public class TestThreadDelegatingScopeFilter
 {
@@ -45,7 +45,8 @@ public class TestThreadDelegatingScopeFilter
         ThreadDelegatedScope.SCOPE.changeScope(null);
 
         final ApplicationContext context =
-                new AnnotationConfigApplicationContext(ThreadDelegatedScopeConfig.class, ScopedObject.Config.class);
+                new AnnotationConfigApplicationContext(ThreadDelegatedScopeConfiguration.class,
+                        ScopedObject.ScopedObjectConfiguration.class);
         final AutowireCapableBeanFactory factory = context.getAutowireCapableBeanFactory();
 
         factory.autowireBean(this);

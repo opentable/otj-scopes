@@ -181,7 +181,7 @@ public class TestThreadDelegated
 
     private static BeanFactory getFactory() {
         final ApplicationContext context =
-                new AnnotationConfigApplicationContext(ThreadDelegatedScopeConfig.class, ScopedConfig.class);
+                new AnnotationConfigApplicationContext(ThreadDelegatedScopeConfiguration.class, ScopedConfig.class);
         return context.getAutowireCapableBeanFactory();
     }
 }

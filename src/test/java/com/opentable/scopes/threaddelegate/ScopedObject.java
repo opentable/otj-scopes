@@ -62,7 +62,7 @@ public class ScopedObject
     }
 
     @Configuration
-    public static class Config {
+    public static class ScopedObjectConfiguration {
         @Bean
         @Scope(ThreadDelegatedContext.SCOPE_THREAD_DELEGATED)
         public ScopedObject getScopedObject() {

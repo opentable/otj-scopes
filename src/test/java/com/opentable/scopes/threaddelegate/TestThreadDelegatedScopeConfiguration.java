@@ -26,7 +26,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 
 import com.opentable.scopes.threaddelegate.ScopedObject.TestObjectProvider;
 
-public class TestThreadDelegatedScopeConfig
+public class TestThreadDelegatedScopeConfiguration
 {
     @Before
     public void setUp()
@@ -175,12 +175,14 @@ public class TestThreadDelegatedScopeConfig
     }
 
     private static BeanFactory getSimpleBeanFactory() {
-        return new AnnotationConfigApplicationContext(ThreadDelegatedScopeConfig.class).getAutowireCapableBeanFactory();
+        return new AnnotationConfigApplicationContext(ThreadDelegatedScopeConfiguration.class)
+                .getAutowireCapableBeanFactory();
     }
 
     private static BeanFactory getScopedObjectBeanFactory() {
         final ApplicationContext context =
-                new AnnotationConfigApplicationContext(ThreadDelegatedScopeConfig.class, ScopedObject.Config.class);
+                new AnnotationConfigApplicationContext(ThreadDelegatedScopeConfiguration.class,
+                        ScopedObject.ScopedObjectConfiguration.class);
         return context.getAutowireCapableBeanFactory();
     }
 

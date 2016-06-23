@@ -25,7 +25,7 @@ import com.opentable.scopes.threaddelegate.servlet.ThreadDelegatingScopeFilter;
  */
 @Configuration
 @Import(ThreadDelegatingScopeFilter.class)
-public class ThreadDelegatedScopeConfig
+public class ThreadDelegatedScopeConfiguration
 {
     @Bean
     public static BeanFactoryPostProcessor getBeanFactoryPostProcessor() {
