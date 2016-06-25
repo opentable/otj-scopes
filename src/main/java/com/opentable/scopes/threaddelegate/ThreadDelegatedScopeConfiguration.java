@@ -14,6 +14,7 @@
 package com.opentable.scopes.threaddelegate;
 
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -27,6 +28,8 @@ import com.opentable.scopes.threaddelegate.servlet.ThreadDelegatingScopeFilter;
 @Import(ThreadDelegatingScopeFilter.class)
 public class ThreadDelegatedScopeConfiguration
 {
+    private static final String PATTERN = "/*";
+
     @Bean
     public static BeanFactoryPostProcessor getBeanFactoryPostProcessor() {
         return beanFactory ->
@@ -36,5 +39,12 @@ public class ThreadDelegatedScopeConfiguration
     @Bean
     public ThreadDelegatedScope getThreadDelegatedScope() {
         return ThreadDelegatedScope.SCOPE;
+    }
+
+    @Bean
+    public FilterRegistrationBean getThreadDelegatingScopeFilter(final ThreadDelegatingScopeFilter filter) {
+        final FilterRegistrationBean bean = new FilterRegistrationBean(filter);
+        bean.addUrlPatterns(PATTERN);
+        return bean;
     }
 }
