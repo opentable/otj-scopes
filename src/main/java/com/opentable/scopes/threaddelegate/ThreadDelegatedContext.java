@@ -30,6 +30,8 @@ import com.google.common.base.Preconditions;
  */
 public class ThreadDelegatedContext
 {
+    private static final String NULL_NAME = "name must not be null!";
+
     public static final String SCOPE_THREAD_DELEGATED = "thread_delegated";
 
     private final Map<String, Object> contents = new HashMap<>();
@@ -41,21 +43,20 @@ public class ThreadDelegatedContext
 
     synchronized boolean containsKey(@Nonnull final String name)
     {
-        Preconditions.checkArgument(name != null, "name must not be null!");
+        Preconditions.checkArgument(name != null, NULL_NAME);
         return contents.containsKey(name);
     }
 
     @SuppressWarnings("unchecked")
     synchronized <T> T get(final String name)
     {
-        Preconditions.checkArgument(name != null, "name must not be null!");
-        final Object result = contents.get(name);
-        return (T) result;
+        Preconditions.checkArgument(name != null, NULL_NAME);
+        return (T) contents.get(name);
     }
 
     synchronized void put(@Nonnull final String name, @Nullable final Object value)
     {
-        Preconditions.checkArgument(name != null, "name must not be null!");
+        Preconditions.checkArgument(name != null, NULL_NAME);
         contents.put(name, value);
 
         if (value instanceof ScopeListener) {
@@ -69,9 +70,8 @@ public class ThreadDelegatedContext
     @SuppressWarnings("unchecked")
     synchronized <T> T remove(@Nonnull final String name)
     {
-        Preconditions.checkArgument(name != null, "name must not be null!");
-        final Object result = contents.remove(name);
-        return (T) result;
+        Preconditions.checkArgument(name != null, NULL_NAME);
+        return (T) contents.remove(name);
     }
 
     @VisibleForTesting
