@@ -18,7 +18,7 @@
   <parent>
     <groupId>com.opentable</groupId>
     <artifactId>otj-parent-spring</artifactId>
-    <version>184</version>
+    <version>253</version>
   </parent>
 
   <scm>
@@ -30,9 +30,15 @@
 
   <groupId>com.opentable.components</groupId>
   <artifactId>otj-scopes</artifactId>
-  <version>2.0.4-SNAPSHOT</version>
+  <version>5.2.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
+  <properties>
+    <!-- Remove once parent updated -->
+    <dep.spring-boot.version>2.2.7.RELEASE</dep.spring-boot.version>
+    <dep.spring.version>5.2.6.RELEASE</dep.spring.version>
+    <dep.spring-security.version>5.2.4.RELEASE</dep.spring-security.version>
+  </properties>
   <dependencies>
     <dependency>
       <groupId>org.slf4j</groupId>
