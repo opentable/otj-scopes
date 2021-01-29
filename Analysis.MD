@@ -98,10 +98,35 @@ Thoughts
     * Everytime a Scope.Enter fires we copy from the current conservedHeaders to MDC
     * Everytime a Scope.Leave fires we remove from MDC
     * Implies that we have a redundant fire I think? Because at first injection we'll get an ENTER but don't have anything to put
-    * MDC is write only, values are never read from it
+    * MDC is write only, values are never read from it back into the ThreadContext
     * MDC is really used for logging and for HTTPClients. Theoretically the clients could be injected with the same @Scope
     ConservedHeaders, but maybe a good reason not to?
     * Reactive won't work this way, which I knew already.
     * What I don't follow is who triggers once we switch threads the actual provided object bit. I can see how the request cycle
-    "servlet thread" works wonderuflly. I can see IF someone we injects the scoped object that all will work. Don't see what
+    "servlet thread" works wonderfully. I can see IF someone we injects the scoped object that all will work. Don't see what
       will trigger that though.
+      
+
+Post reading ConservedHeader code:
+* ConservedHeaders is marked as a ScopeListener, and injected with @Scope into Filter
+    Yes
+* A Filter copies the request values into conserved headers
+    Yes
+* Everytime a Scope.Enter fires we copy from the current conservedHeaders to MDC
+    Yes, also when the setConservedHeqders is called
+* Everytime a Scope.Leave fires we remove from MDC
+    Yup
+* Implies that we have a redundant fire I think? Because at first injection we'll get an ENTER but don't have anything to put
+    Correct, compensated for with the set
+* MDC is write only, values are never read from it back into the ThreadContext
+    Yes
+* MDC is really used for logging and for HTTPClients. Theoretically the clients could be injected with the same @Scope
+ConservedHeaders, but maybe a good reason not to?
+    Yes and in fact JAXRS client uses Provider<ConservedHeaders> and the others use MDC
+* Reactive won't work this way, which I knew already.
+    Yes, I need to finish reading this
+* What I don't follow is who triggers once we switch threads the actual provided object bit. I can see how the request cycle
+"servlet thread" works wonderuflly. I can see IF someone we injects the scoped object that all will work. Don't see what
+will trigger that though.
+      Correct, only Something like https://github.com/opentable/otj-executors/blob/master/src/main/java/com/opentable/concurrent/ThreadDelegatingDecorator.java
+      can do that.
