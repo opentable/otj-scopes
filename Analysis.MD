@@ -126,7 +126,7 @@ ConservedHeaders, but maybe a good reason not to?
 * Reactive won't work this way, which I knew already.
     Yes, I need to finish reading this
 * What I don't follow is who triggers once we switch threads the actual provided object bit. I can see how the request cycle
-"servlet thread" works wonderuflly. I can see IF someone we injects the scoped object that all will work. Don't see what
+"servlet thread" works wonderfully. I can see IF someone we injects the scoped object that all will work. Don't see what
 will trigger that though.
       Correct, only Something like https://github.com/opentable/otj-executors/blob/master/src/main/java/com/opentable/concurrent/ThreadDelegatingDecorator.java
       can do that.
