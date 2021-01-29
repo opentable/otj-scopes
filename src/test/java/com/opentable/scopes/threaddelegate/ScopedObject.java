@@ -20,7 +20,8 @@ import javax.inject.Provider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
-
+// Sample scoped object
+// Keep an atomic counter of how many times perform()  is called
 public class ScopedObject
 {
     private final AtomicInteger performances = new AtomicInteger();
@@ -39,6 +40,7 @@ public class ScopedObject
         return performances.intValue();
     }
 
+    // Tracks how many handouts there are, eg how many times this provider is called.
     public static class TestObjectProvider implements Provider<ScopedObject>
     {
         private static final AtomicInteger HANDOUTS = new AtomicInteger();
@@ -63,6 +65,7 @@ public class ScopedObject
 
     @Configuration
     public static class ScopedObjectConfiguration {
+        // Mark bean so its created in the appropriate scope
         @Bean
         @Scope(ThreadDelegatedContext.SCOPE_THREAD_DELEGATED)
         public ScopedObject getScopedObject() {

@@ -19,7 +19,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.opentable.scopes.threaddelegate.ThreadDelegatedContext.ScopeEvent;
-
+// Here we test the eventing system in the Context
 public class TestThreadDelegatedContextEvents
 {
     private ThreadDelegatedContext plate = null;
@@ -41,6 +41,8 @@ public class TestThreadDelegatedContextEvents
         this.plate = null;
     }
 
+    // We are directly putting in a ScopeListener
+    // Verify an ENTER event was sent to it
     @Test
     public void testPutEvent()
     {
@@ -52,6 +54,8 @@ public class TestThreadDelegatedContextEvents
         Assert.assertEquals(ScopeEvent.ENTER, eventTest.getLastEvent());
     }
 
+    // Same test, but show two ScopeListeners have independent counts
+    // Hence the second ScopeListener added to context doesn't increment the other
     @Test
     public void testDoublePutEvent()
     {
@@ -73,16 +77,19 @@ public class TestThreadDelegatedContextEvents
         Assert.assertEquals(1, fooEventTest.getEventCount());
     }
 
+    // Force various events
     @Test
     public void testEventNotify()
     {
         Assert.assertFalse(plate.containsKey(fooName));
         final EventRecordingObject fooEventTest = new EventRecordingObject();
 
+        // Redundant test proving it gets ENTER
         plate.put(fooName, fooEventTest);
         Assert.assertEquals(1, fooEventTest.getEventCount());
         Assert.assertEquals(ScopeEvent.ENTER, fooEventTest.getLastEvent());
 
+        // Proves the count increments and tracks properly when we send different events
         plate.event(ScopeEvent.ENTER);
         Assert.assertEquals(2, fooEventTest.getEventCount());
         Assert.assertEquals(ScopeEvent.ENTER, fooEventTest.getLastEvent());
@@ -93,12 +100,14 @@ public class TestThreadDelegatedContextEvents
     }
 
 
+    // Clear should clear elements but also send LEAVE to all ScopeListeners
     @Test
     public void testEventClear()
     {
         Assert.assertFalse(plate.containsKey(fooName));
         final EventRecordingObject fooEventTest = new EventRecordingObject();
 
+        // add listener
         plate.put(fooName, fooEventTest);
         Assert.assertEquals(1, fooEventTest.getEventCount());
         Assert.assertEquals(ScopeEvent.ENTER, fooEventTest.getLastEvent());

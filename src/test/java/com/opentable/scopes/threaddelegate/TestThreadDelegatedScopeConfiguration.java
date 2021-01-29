@@ -41,6 +41,7 @@ public class TestThreadDelegatedScopeConfiguration
         ThreadDelegatedScope.SCOPE.changeScope(null);
     }
 
+    // Merely proves the singleton was injected for the Scope implementation
     @Test
     public void testSimple()
     {
@@ -53,6 +54,7 @@ public class TestThreadDelegatedScopeConfiguration
         Assert.assertSame(ThreadDelegatedScope.SCOPE, scope);
     }
 
+    // Getting the same object repeatedly - minus scope changes returns the same object
     @Test
     public void testScopedObject()
     {
@@ -68,6 +70,7 @@ public class TestThreadDelegatedScopeConfiguration
         Assert.assertSame(t1, t2);
     }
 
+    // On the other hand getting two objects and changing the scope, they won't be the same
     @Test
     public void testScopeChange()
     {
@@ -87,6 +90,7 @@ public class TestThreadDelegatedScopeConfiguration
         Assert.assertNotSame(t1, t2);
     }
 
+    // Changing the scope and back again works as expected.
     @Test
     public void testScopeHandoff()
     {
@@ -116,6 +120,7 @@ public class TestThreadDelegatedScopeConfiguration
         Assert.assertNotSame(t2, t3);
     }
 
+    // Objects in new threads are different
     @Test
     public void testThreaded() throws Exception
     {
@@ -141,6 +146,7 @@ public class TestThreadDelegatedScopeConfiguration
         Assert.assertEquals(0, testObject.getPerformances());
     }
 
+    // And changing  scope inside new thread to original scope works too
     @Test
     public void testThreadHandover() throws Exception
     {

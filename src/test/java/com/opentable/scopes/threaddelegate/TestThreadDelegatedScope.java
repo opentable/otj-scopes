@@ -20,6 +20,8 @@ import org.junit.Test;
 
 import com.opentable.scopes.threaddelegate.ThreadDelegatedContext.ScopeEvent;
 
+// Primary purpose of this class is to test various scope changes and show the context
+// returns the right instance and that the events trigger as expected
 public class TestThreadDelegatedScope
 {
     private ThreadDelegatedScope scope = null;
@@ -40,6 +42,7 @@ public class TestThreadDelegatedScope
         this.scope = null;
     }
 
+    // We get a new context and calling getContext twice, we apparently get the same Context, and its empty
     @Test
     public void testNewPlate()
     {
@@ -54,6 +57,7 @@ public class TestThreadDelegatedScope
         Assert.assertSame(plate, plate2);
     }
 
+    // We get a new context and show when we call changeScope(null), the next context handed out is not the same
     @Test
     public void testScopeLeave()
     {
@@ -70,6 +74,9 @@ public class TestThreadDelegatedScope
         Assert.assertNotSame(plate, plate2);
     }
 
+    // We call getContext, and its empty of course.
+    // calling changeScope with a manually instantiated second context, and then calling getContext
+    // shows we replaced it with second context
     @Test
     public void testScopePromote()
     {
@@ -92,6 +99,9 @@ public class TestThreadDelegatedScope
         Assert.assertSame(newPlate, plate2);
     }
 
+    // We grab a new empty context with getContext()
+    // Then we show after we put a ScopeListener into the context
+    // and then clear the context, we received the correct events (ENTER and then LEAVE)
     @Test
     public void testChangeScopeEvents()
     {
@@ -117,19 +127,24 @@ public class TestThreadDelegatedScope
         final ThreadDelegatedContext plate = new ThreadDelegatedContext();
         final EventRecordingObject fooEventTest = new EventRecordingObject();
 
+        // We get an Enter
         plate.put(fooName, fooEventTest);
         Assert.assertEquals(1, fooEventTest.getEventCount());
         Assert.assertEquals(ScopeEvent.ENTER, fooEventTest.getLastEvent());
 
+        // We stick the Context into the Scope
         scope.changeScope(plate);
 
         Assert.assertSame(plate, scope.getContext());
 
+        // We get a second Enter. Note that Listeners get 1 for being placed initially and also for the context itself.
         Assert.assertEquals(2, fooEventTest.getEventCount());
         Assert.assertEquals(ScopeEvent.ENTER, fooEventTest.getLastEvent());
 
+        // We kill the context
         scope.changeScope(null);
 
+        // Prove we got a leave, and that the new context aint the same
         Assert.assertNotSame(plate, scope.getContext());
         Assert.assertEquals(3, fooEventTest.getEventCount());
         Assert.assertEquals(ScopeEvent.LEAVE, fooEventTest.getLastEvent());
@@ -139,6 +154,7 @@ public class TestThreadDelegatedScope
 
         Assert.assertSame(plate, scope.getContext());
 
+        // Listeners don't reset, despite this context in/out
         Assert.assertEquals(4, fooEventTest.getEventCount());
         Assert.assertEquals(ScopeEvent.ENTER, fooEventTest.getLastEvent());
 
@@ -159,6 +175,7 @@ public class TestThreadDelegatedScope
         Assert.assertEquals(ScopeEvent.ENTER, fooEventTest.getLastEvent());
 
         // Pathologic case: Replace with itself.
+        // This is a no op and doesn't trigger an event
         scope.changeScope(plate);
 
         Assert.assertSame(plate, scope.getContext());

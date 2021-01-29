@@ -18,6 +18,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+// Basic map operation checks - no particularly special stuff here.
 public class TestThreadDelegatedContext
 {
     private ThreadDelegatedContext plate = null;
@@ -39,6 +40,7 @@ public class TestThreadDelegatedContext
         Assert.assertNotNull(plate);
         this.plate = null;
     }
+
 
     @Test
     public void testEmptyPlate()
@@ -143,6 +145,7 @@ public class TestThreadDelegatedContext
         Assert.assertFalse(plate.containsKey(barName));
     }
 
+    // Test some error conditions with providing null etc.
     @Test(expected=IllegalArgumentException.class)
     public void testNullKeyGet()
     {

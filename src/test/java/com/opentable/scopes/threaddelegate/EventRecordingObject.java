@@ -16,6 +16,7 @@ package com.opentable.scopes.threaddelegate;
 import com.opentable.scopes.threaddelegate.ThreadDelegatedContext.ScopeEvent;
 import com.opentable.scopes.threaddelegate.ThreadDelegatedContext.ScopeListener;
 
+// As an implementation of ScopeListener we can count how many events occurred and return the last event
 class EventRecordingObject implements ScopeListener
 {
     private int eventCount = 0;

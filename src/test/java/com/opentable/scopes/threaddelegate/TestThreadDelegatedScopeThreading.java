@@ -25,6 +25,7 @@ import org.junit.Test;
 
 import com.opentable.scopes.threaddelegate.ScopedObject.TestObjectProvider;
 
+// A more basic version of TestThreadDelegated, manually instantiating scope, instead of injecting via Spring
 public class TestThreadDelegatedScopeThreading
 {
     private ThreadDelegatedScope scope = null;
@@ -48,6 +49,8 @@ public class TestThreadDelegatedScopeThreading
         this.scope = null;
     }
 
+    // Our first threaded test!
+    // Proves the basic thesis that objects in parent and all child threads will be independent.
     @Test
     public void testThreaded() throws Exception
     {
@@ -72,6 +75,9 @@ public class TestThreadDelegatedScopeThreading
         Assert.assertEquals(0, scopedProvider.get().getPerformances());
     }
 
+
+    // This is similar to the previous test, but shows that if we
+    // manually switch back to original context, the same object is handed out and mutated
     @Test
     public void testThreadHandover() throws Exception
     {
