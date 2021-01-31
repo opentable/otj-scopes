@@ -130,3 +130,35 @@ ConservedHeaders, but maybe a good reason not to?
 will trigger that though.
       Correct, only Something like https://github.com/opentable/otj-executors/blob/master/src/main/java/com/opentable/concurrent/ThreadDelegatingDecorator.java
       can do that.
+  
+
+Reactive Logic in otj-conserved-header
+====
+
+ConservedHeadersWebFilter
+---
+* Similar to the Servlet version - ConservedHeaderFilter found in Core
+* The main difference is we directly enrich the async "Context" object, and copy the MDC.
+* The Context is a map, and we in turn put the MDC map in it, under a single key.
+* Everyone has access to the context, but to handle logging, various clients, and general usage, the MDC is enriched as described below
+
+ScopeConfiguration
+----
+The main wiring is done here for both clients and servers. Also Scott left many useful links at the top
+
+Construct:
+```
+Hooks.onEachOperator(MDC_CONTEXT_REACTOR_KEY,
+Operators.lift(((scannable, coreSubscriber) -> new MdcContextSynchronizer<>(coreSubscriber))));
+```
+Destroy resets this.
+
+Basically this means this will be called for each operation
+
+MdcContextSynchronizer<T> implements CoreSubscriber<T>
+---
+* Basically this is a delegate chain
+* most functions simply delegate
+* onNext and OnError propagate or clear the MDC
+
+
