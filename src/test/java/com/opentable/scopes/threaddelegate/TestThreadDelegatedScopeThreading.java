@@ -16,12 +16,12 @@ package com.opentable.scopes.threaddelegate;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import javax.inject.Provider;
 
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.beans.factory.ObjectFactory;
 
 import com.opentable.scopes.threaddelegate.ScopedObject.TestObjectProvider;
 
@@ -55,14 +55,14 @@ public class TestThreadDelegatedScopeThreading
     public void testThreaded() throws Exception
     {
         final TestObjectProvider unscopedProvider = new TestObjectProvider();
-        final Provider<ScopedObject> scopedProvider = scope.provider(fooName, unscopedProvider);
+        final ObjectFactory<ScopedObject> scopedProvider = scope.provider(fooName, unscopedProvider);
 
         int threadCount = 10;
         final CountDownLatch latch = new CountDownLatch(threadCount);
         for (int i = 0 ; i < threadCount; i++) {
             new Thread(() ->
             {
-                final ScopedObject testObject = scopedProvider.get();
+                final ScopedObject testObject = scopedProvider.getObject();
                 Assert.assertEquals(0, testObject.getPerformances());
                 testObject.perform();
                 latch.countDown();
@@ -72,7 +72,7 @@ public class TestThreadDelegatedScopeThreading
         Assert.assertTrue("Some threads got stuck!", latch.await(1, TimeUnit.SECONDS));
 
         Assert.assertEquals(threadCount, TestObjectProvider.getHandouts());
-        Assert.assertEquals(0, scopedProvider.get().getPerformances());
+        Assert.assertEquals(0, scopedProvider.getObject().getPerformances());
     }
 
 
@@ -82,7 +82,7 @@ public class TestThreadDelegatedScopeThreading
     public void testThreadHandover() throws Exception
     {
         final TestObjectProvider unscopedProvider = new TestObjectProvider();
-        final Provider<ScopedObject> scopedProvider = scope.provider(fooName, unscopedProvider);
+        final ObjectFactory<ScopedObject> scopedProvider = scope.provider(fooName, unscopedProvider);
 
         int threadCount = 10;
 
@@ -93,7 +93,7 @@ public class TestThreadDelegatedScopeThreading
             new Thread(() ->
             {
                 scope.changeScope(parentPlate);
-                final ScopedObject testObject = scopedProvider.get();
+                final ScopedObject testObject = scopedProvider.getObject();
                 testObject.perform();
                 scope.changeScope(null);
                 latch.countDown();
@@ -103,6 +103,6 @@ public class TestThreadDelegatedScopeThreading
         Assert.assertTrue("Some threads got stuck!", latch.await(1, TimeUnit.SECONDS));
 
         Assert.assertEquals(1, TestObjectProvider.getHandouts());
-        Assert.assertEquals(threadCount, scopedProvider.get().getPerformances());
+        Assert.assertEquals(threadCount, scopedProvider.getObject().getPerformances());
     }
 }

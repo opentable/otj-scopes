@@ -15,8 +15,7 @@ package com.opentable.scopes.threaddelegate;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.inject.Provider;
-
+import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
@@ -41,12 +40,12 @@ public class ScopedObject
     }
 
     // Tracks how many handouts there are, eg how many times this provider is called.
-    public static class TestObjectProvider implements Provider<ScopedObject>
+    public static class TestObjectProvider implements ObjectFactory<ScopedObject>
     {
         private static final AtomicInteger HANDOUTS = new AtomicInteger();
 
         @Override
-        public ScopedObject get()
+        public ScopedObject getObject()
         {
             HANDOUTS.incrementAndGet();
             return new ScopedObject();
@@ -69,7 +68,7 @@ public class ScopedObject
         @Bean
         @Scope(ThreadDelegatedContext.SCOPE_THREAD_DELEGATED)
         public ScopedObject getScopedObject() {
-            return new TestObjectProvider().get();
+            return new TestObjectProvider().getObject();
         }
     }
 }

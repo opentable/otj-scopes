@@ -18,9 +18,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 
@@ -41,7 +38,7 @@ public class ThreadDelegatedContext
     {
     }
 
-    synchronized boolean containsKey(@Nonnull final String name)
+    synchronized boolean containsKey(final String name)
     {
         Preconditions.checkArgument(name != null, NULL_NAME);
         return contents.containsKey(name);
@@ -54,7 +51,7 @@ public class ThreadDelegatedContext
         return (T) contents.get(name);
     }
 
-    synchronized void put(@Nonnull final String name, @Nullable final Object value)
+    synchronized void put(final String name, final Object value)
     {
         Preconditions.checkArgument(name != null, NULL_NAME);
         contents.put(name, value);
@@ -68,7 +65,7 @@ public class ThreadDelegatedContext
     }
 
     @SuppressWarnings("unchecked")
-    synchronized <T> T remove(@Nonnull final String name)
+    synchronized <T> T remove(final String name)
     {
         Preconditions.checkArgument(name != null, NULL_NAME);
         return (T) contents.remove(name);

@@ -15,7 +15,6 @@ package com.opentable.scopes.threaddelegate.servlet;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 
 import org.easymock.EasyMock;
@@ -23,6 +22,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -33,10 +33,10 @@ import com.opentable.scopes.threaddelegate.ThreadDelegatedScopeConfiguration;
 
 public class TestThreadDelegatingScopeFilter
 {
-    @Inject
+    @Autowired
     private ThreadDelegatingScopeFilter filter = null;
 
-    @Inject
+    @Autowired
     private ApplicationContext context = null;
 
     @Before
