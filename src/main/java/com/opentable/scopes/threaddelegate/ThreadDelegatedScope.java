@@ -14,7 +14,6 @@
 package com.opentable.scopes.threaddelegate;
 
 import javax.annotation.Nullable;
-import javax.inject.Provider;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
@@ -84,7 +83,7 @@ public class ThreadDelegatedScope implements Scope
     @Override
     public Object get(String name, ObjectFactory<?> objectFactory)
     {
-        return provider(name, objectFactory::getObject).get();
+        return provider(name, objectFactory::getObject).getObject();
     }
 
     @Override
@@ -112,17 +111,17 @@ public class ThreadDelegatedScope implements Scope
     }
 
     @VisibleForTesting
-    <T> ThreadDelegatedScopeProvider<T> provider(final String name, final Provider<T> unscoped)
+    <T> ThreadDelegatedScopeProvider<T> provider(final String name, final ObjectFactory<T> unscoped)
     {
         return new ThreadDelegatedScopeProvider<>(name, unscoped);
     }
 
-    public class ThreadDelegatedScopeProvider<T> implements Provider<T>
+    public class ThreadDelegatedScopeProvider<T> implements ObjectFactory<T>
     {
         private final String name;
-        private final Provider<T> unscoped;
+        private final ObjectFactory<T> unscoped;
 
-        public ThreadDelegatedScopeProvider(final String name, final Provider<T> unscoped)
+        public ThreadDelegatedScopeProvider(final String name, final ObjectFactory<T> unscoped)
         {
             Preconditions.checkArgument(name != null, "key must not be null!");
             Preconditions.checkArgument(unscoped != null, "unscoped provider must not be null!");
@@ -132,7 +131,7 @@ public class ThreadDelegatedScope implements Scope
         }
 
         @Override
-        public T get()
+        public T getObject()
         {
             final ThreadDelegatedContext context = getContext();
             // This must be synchronized around the context, because otherwise
@@ -142,7 +141,7 @@ public class ThreadDelegatedScope implements Scope
                     return context.get(name);
                 }
                 else {
-                    final T value = unscoped.get();
+                    final T value = unscoped.getObject();
                     context.put(name, value);
                     return value;
                 }

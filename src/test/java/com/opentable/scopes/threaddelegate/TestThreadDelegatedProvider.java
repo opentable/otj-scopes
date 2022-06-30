@@ -13,12 +13,11 @@
  */
 package com.opentable.scopes.threaddelegate;
 
-import javax.inject.Provider;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.beans.factory.ObjectFactory;
 
 import com.opentable.scopes.threaddelegate.ScopedObject.TestObjectProvider;
 
@@ -49,12 +48,12 @@ public class TestThreadDelegatedProvider
     @Test
     public void testUnscopedProvider()
     {
-        final Provider<ScopedObject> unscopedProvider = new TestObjectProvider();
+        final ObjectFactory<ScopedObject> unscopedProvider = new TestObjectProvider();
 
-        final ScopedObject t1 = unscopedProvider.get();
+        final ScopedObject t1 = unscopedProvider.getObject();
         Assert.assertNotNull(t1);
 
-        final ScopedObject t2 = unscopedProvider.get();
+        final ScopedObject t2 = unscopedProvider.getObject();
         Assert.assertNotNull(t2);
 
         Assert.assertNotSame(t1, t2);
@@ -66,15 +65,15 @@ public class TestThreadDelegatedProvider
     public void testSimpleProvider()
     {
         // Get the provider
-        final Provider<ScopedObject> scopedProvider = scope.provider(fooName, new TestObjectProvider());
+        final ObjectFactory<ScopedObject> scopedProvider = scope.provider(fooName, new TestObjectProvider());
         Assert.assertNotNull(scopedProvider);
 
         // Get a ScopedObject from it
-        final ScopedObject t1 = scopedProvider.get();
+        final ScopedObject t1 = scopedProvider.getObject();
         Assert.assertNotNull(t1);
 
         // And a second
-        final ScopedObject t2 = scopedProvider.get();
+        final ScopedObject t2 = scopedProvider.getObject();
         Assert.assertNotNull(t2);
 
         // They remain the same
@@ -89,15 +88,15 @@ public class TestThreadDelegatedProvider
     @Test
     public void testScopeChange()
     {
-        final Provider<ScopedObject> scopedProvider = scope.provider(fooName, new TestObjectProvider());
+        final ObjectFactory<ScopedObject> scopedProvider = scope.provider(fooName, new TestObjectProvider());
         Assert.assertNotNull(scopedProvider);
 
-        final ScopedObject t1 = scopedProvider.get();
+        final ScopedObject t1 = scopedProvider.getObject();
         Assert.assertNotNull(t1);
 
         scope.changeScope(null);
 
-        final ScopedObject t2 = scopedProvider.get();
+        final ScopedObject t2 = scopedProvider.getObject();
         Assert.assertNotNull(t2);
 
         Assert.assertNotSame(t1, t2);
@@ -112,24 +111,24 @@ public class TestThreadDelegatedProvider
     @Test
     public void testScopeHandoff()
     {
-        final Provider<ScopedObject> scopedProvider = scope.provider(fooName, new TestObjectProvider());
+        final ObjectFactory<ScopedObject> scopedProvider = scope.provider(fooName, new TestObjectProvider());
         Assert.assertNotNull(scopedProvider);
 
-        final ScopedObject t1 = scopedProvider.get();
+        final ScopedObject t1 = scopedProvider.getObject();
         Assert.assertNotNull(t1);
 
         final ThreadDelegatedContext plate = scope.getContext();
 
         scope.changeScope(null);
 
-        final ScopedObject t2 = scopedProvider.get();
+        final ScopedObject t2 = scopedProvider.getObject();
         Assert.assertNotNull(t2);
 
         Assert.assertNotSame(t1, t2);
 
         scope.changeScope(plate);
 
-        final ScopedObject t3 = scopedProvider.get();
+        final ScopedObject t3 = scopedProvider.getObject();
         Assert.assertNotNull(t3);
 
         Assert.assertSame(t1, t3);

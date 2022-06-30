@@ -42,8 +42,8 @@ public class ThreadDelegatedScopeConfiguration
     }
 
     @Bean
-    public FilterRegistrationBean getThreadDelegatingScopeFilter(final ThreadDelegatingScopeFilter filter) {
-        final FilterRegistrationBean bean = new FilterRegistrationBean(filter);
+    public FilterRegistrationBean<?> getThreadDelegatingScopeFilter(final ThreadDelegatingScopeFilter filter) {
+        final FilterRegistrationBean<?> bean = new FilterRegistrationBean<>(filter);
         bean.addUrlPatterns(PATTERN);
         return bean;
     }
